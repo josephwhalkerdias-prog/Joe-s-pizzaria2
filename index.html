@@ -1,205 +1,22 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pizzas do Condomínio</title>
-<style>
-  :root{--bg:#0f0f10;--card:#17181b;--muted:#9aa0a6;--txt:#f1f3f4;--brand:#ff7a00;}
-  *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
-  body{margin:0;background:var(--bg);color:var(--txt)}
-  header{padding:20px 16px;border-bottom:1px solid #24262b;background:linear-gradient(180deg,#15161a,#111214)}
-  header h1{margin:0;font-size:22px}
-  header p{margin:6px 0 0;color:var(--muted)}
-  .wrap{max-width:980px;margin:0 auto;padding:16px}
-  .grid{display:grid;grid-template-columns:1fr;gap:14px}
-  @media(min-width:900px){.grid{grid-template-columns:2fr 1fr}}
-  .card{background:var(--card);border:1px solid #24262b;border-radius:12px;padding:14px}
-  h2{margin:6px 0 12px;font-size:18px}
-  .item{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:10px;border:1px solid #262a2f}
-  .item h3{margin:0 0 6px;font-size:16px}
-  .muted{color:var(--muted);font-size:13px}
-  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-  select,input,button{background:#111214;color:var(--txt);border:1px solid #2b2f35;border-radius:10px;padding:10px;font-size:14px}
-  select,input{min-width:0}
-  input[type="number"]{width:90px}
-  .price{margin-left:auto;font-weight:600}
-  .btn{background:var(--brand);border-color:#b35400;color:#000;font-weight:700;cursor:pointer}
-  .btn:disabled{opacity:.6;cursor:not-allowed}
-  .cart-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #2b2f35}
-  .cart-item:last-child{border-bottom:0}
-  .total{display:flex;justify-content:space-between;margin-top:10px;font-weight:700;font-size:16px}
-  .small{font-size:12px;color:var(--muted)}
-  .pill{display:inline-block;padding:4px 8px;border:1px solid #2b2f35;border-radius:999px;font-size:12px;color:var(--muted)}
-  .footer{margin-top:18px;font-size:12px;color:var(--muted);text-align:center}
-  .ok{color:#00d68f;font-weight:600}
-</style>
-</head>
-<body>
-<header class="wrap">
-  <h1>🍕 Pizzas do Condomínio</h1>
-  <p>Pedidos para retirada no térreo ou entrega no bloco.</p>
-</header>
-
-<div class="wrap grid">
-  <section class="card">
-    <h2>Cardápio</h2>
-    <div id="menu"></div>
-    <p class="small">Massas pré-assadas com molho artesanal e ingredientes selecionados.</p>
-  </section>
-
-  <aside class="card">
-    <h2>Seu pedido</h2>
-    <div id="cart"></div>
-
-    <div class="card" style="margin-top:10px">
-      <h3 style="margin:0 0 8px">Entrega / Retirada</h3>
-      <div class="row">
-        <select id="retirada">
-          <option value="Retirada no térreo">Retirada no térreo</option>
-          <option value="Entrega no bloco">Entrega no bloco</option>
-        </select>
-        <input id="apto" placeholder="Bloco/Ap." maxlength="8">
-      </div>
-      <div class="row">
-        <select id="janela">
-          <option value="Hoje 19:00–19:30">Hoje 19:00–19:30</option>
-          <option value="Hoje 19:30–20:00">Hoje 19:30–20:00</option>
-          <option value="Hoje 20:00–20:30">Hoje 20:00–20:30</option>
-        </select>
-        <select id="pagamento">
-          <option value="Pix">Pix</option>
-          <option value="Dinheiro (troco)">Dinheiro (troco)</option>
-        </select>
-      </div>
-      <input id="obs" placeholder="Observações (sem cebola, ponto...)">
-      <p class="small">Chave Pix: <b id="pixKeyLabel">51998071649</b></p>
-      <button class="btn" style="width:100%;margin-top:8px" id="btnEnviar" disabled>Enviar pedido via WhatsApp</button>
-      <p class="small">Ao clicar, será aberto o WhatsApp com o resumo do pedido.</p>
-    </div>
-    <p class="footer">JJ Solutions © 2025</p>
-  </aside>
-</div>
-
-<script>
-const WHATSAPP_NUMBER = "5551998071649"; 
-const PIX_KEY = "51998071649";
-document.getElementById('pixKeyLabel').textContent = PIX_KEY;
-
-const MENU = [
-  { id:1, nome:"Calabresa", desc:"Calabresa artesanal, cebola e azeitonas.", tamanhos:[
-    { rotulo:"25 cm", preco:36.90 }, { rotulo:"30 cm", preco:46.90 }
-  ]},
-  { id:2, nome:"Marguerita", desc:"Mussarela, tomate, manjericão e parmesão.", tamanhos:[
-    { rotulo:"25 cm", preco:37.90 }, { rotulo:"30 cm", preco:47.90 }
-  ]},
-  { id:3, nome:"Bacon", desc:"Bacon crocante e mussarela derretida.", tamanhos:[
-    { rotulo:"25 cm", preco:38.90 }, { rotulo:"30 cm", preco:48.90 }
-  ]},
-  { id:4, nome:"Mussarela", desc:"Mussarela, molho da casa e orégano.", tamanhos:[
-    { rotulo:"25 cm", preco:34.90 }, { rotulo:"30 cm", preco:44.90 }
-  ]}
-];
-const EXTRAS = [
-  { id:"borda", nome:"Borda recheada", preco:6.00 },
-  { id:"queijo", nome:"+ Queijo", preco:4.00 }
-];
-
-const menuEl = document.getElementById('menu');
-MENU.forEach(p=>{
-  const el = document.createElement('div');
-  el.className = 'item';
-  el.innerHTML = `
-    <div style="flex:1">
-      <h3>${p.nome}</h3>
-      <div class="muted">${p.desc}</div>
-      <div class="row">
-        <select id="tam-${p.id}">
-          ${p.tamanhos.map(t=>`<option value="${t.preco}">${t.rotulo}</option>`).join('')}
-        </select>
-        <select id="ext-${p.id}">
-          <option value="0">Sem extra</option>
-          ${EXTRAS.map(e=>`<option value="${e.preco}">${e.nome} (+R$ ${e.preco.toFixed(2)})</option>`).join('')}
-        </select>
-        <input id="qty-${p.id}" type="number" min="1" value="1">
-        <button class="btn" onclick="addToCart(${p.id})">Adicionar</button>
-      </div>
-    </div>
-    <div class="price">a partir de R$ ${p.tamanhos[0].preco.toFixed(2)}</div>`;
-  menuEl.appendChild(el);
-});
-
-let cart = [];
-function addToCart(id){
-  const item = MENU.find(i=>i.id===id);
-  const tamSel = document.getElementById(`tam-${id}`);
-  const extraSel = document.getElementById(`ext-${id}`);
-  const qty = parseInt(document.getElementById(`qty-${id}`).value||1,10);
-  const tamanho = tamSel.selectedOptions[0].textContent;
-  const precoBase = parseFloat(tamSel.value);
-  const extraPreco = parseFloat(extraSel.value);
-  const extraNome = extraSel.selectedOptions[0].textContent.includes('Sem extra')?null:extraSel.selectedOptions[0].textContent.split(' (+')[0];
-  cart.push({
-    id: Date.now(),
-    nome: item.nome,
-    tamanho,
-    extra: extraNome,
-    precoUnit: +(precoBase + extraPreco).toFixed(2),
-    qty
-  });
-  renderCart();
-}
-function removeItem(id){cart=cart.filter(i=>i.id!==id);renderCart();}
-function formatBR(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
-function renderCart(){
-  const cartEl=document.getElementById('cart');
-  if(cart.length===0){cartEl.innerHTML=`<p class="muted">Seu carrinho está vazio.</p>`;document.getElementById('btnEnviar').disabled=true;return;}
-  let html=cart.map(i=>`
-    <div class="cart-item">
-      <div><b>${i.nome}</b> — ${i.tamanho} ${i.extra?`<span class="pill">${i.extra}</span>`:''}
-      <div class="small">Qtd ${i.qty} · ${formatBR(i.precoUnit)} un.</div></div>
-      <button onclick="removeItem(${i.id})">remover</button>
-    </div>`).join('');
-  const subtotal=cart.reduce((s,i)=>s+i.precoUnit*i.qty,0);
-  const taxaEntrega=(document.getElementById('retirada')?.value==='Entrega no bloco')?5.00:0;
-  const total=subtotal+taxaEntrega;
-  html+=`<div class="total"><span>Subtotal</span><span>${formatBR(subtotal)}</span></div>
-         <div class="total"><span>Entrega</span><span>${formatBR(taxaEntrega)}</span></div>
-         <div class="total"><span>Total</span><span>${formatBR(total)}</span></div>`;
-  cartEl.innerHTML=html;
-  document.getElementById('btnEnviar').disabled=false;
-}
-function montarMensagem(){
-  const retirada=document.getElementById('retirada').value;
-  const apto=document.getElementById('apto').value.trim();
-  const janela=document.getElementById('janela').value;
-  const pagamento=document.getElementById('pagamento').value;
-  const obs=document.getElementById('obs').value.trim();
-  const linhas=[];
-  linhas.push(`*Novo pedido — Pizzas do Condomínio*`);
-  linhas.push(`\n*Itens:*`);
-  cart.forEach(i=>{
-    linhas.push(`• ${i.qty}x ${i.nome} (${i.tamanho})${i.extra?` + ${i.extra}`:''} — ${formatBR(i.precoUnit*i.qty)}`);
-  });
-  const subtotal=cart.reduce((s,i)=>s+i.precoUnit*i.qty,0);
-  const taxaEntrega=(retirada==='Entrega no bloco')?5.00:0;
-  const total=subtotal+taxaEntrega;
-  linhas.push(`\nSubtotal: ${formatBR(subtotal)}`);
-  linhas.push(`Entrega: ${formatBR(taxaEntrega)}`);
-  linhas.push(`*Total:* ${formatBR(total)}`);
-  linhas.push(`\n*Entrega/Retirada:* ${retirada}${apto?` — ${apto}`:''}`);
-  linhas.push(`*Janela:* ${janela}`);
-  linhas.push(`*Pagamento:* ${pagamento}`);
-  if(pagamento==='Pix'){linhas.push(`Chave Pix: ${PIX_KEY}`);}
-  if(obs){linhas.push(`\nObs.: ${obs}`);}
-  return linhas.join('\n');
-}
-document.getElementById('btnEnviar').addEventListener('click',()=>{
-  if(cart.length===0)return;
-  const msg=encodeURIComponent(montarMensagem());
-  const url=`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
-  window.open(url,'_blank');
-});
-</script>
-</body>
-</html>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pizzas do Condomínio</title><style>:root{--bg:#0f0f10;--card:#17181b;--muted:#9aa0a6;--txt:#f1f3f4;--brand:#ff7a00}*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}body{margin:0;background:var(--bg);color:var(--txt)}header{padding:20px 16px;border-bottom:1px solid #24262b;background:linear-gradient(180deg,#15161a,#111214)}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;color:var(--muted)}.wrap{max-width:980px;margin:0 auto;padding:16px}.grid{display:grid;grid-template-columns:1fr;gap:14px}@media(min-width:900px){.grid{grid-template-columns:2fr 1fr}}.card{background:var(--card);border:1px solid #24262b;border-radius:12px;padding:14px}h2{margin:6px 0 12px;font-size:18px}.item{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:10px;border:1px solid #262a2f}.item h3{margin:0 0 6px;font-size:16px}.muted{color:var(--muted);font-size:13px}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}input,button,select{background:#111214;color:var(--txt);border:1px solid #2b2f35;border-radius:10px;padding:10px;font-size:14px}input[type=number]{width:90px}.price{margin-left:auto;font-weight:600}.btn{background:var(--brand);border-color:#b35400;color:#000;font-weight:700;cursor:pointer}.btn:disabled{opacity:.6;cursor:not-allowed}.cart-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #2b2f35}.cart-item:last-child{border-bottom:0}.total{display:flex;justify-content:space-between;margin-top:10px;font-weight:700;font-size:16px}.small{font-size:12px;color:var(--muted)}.footer{margin-top:18px;font-size:12px;color:var(--muted);text-align:center}</style></head><body><header class="wrap"><h1>🍕 Pizzas do Condomínio</h1><p>Todas as pizzas com <b>30 cm</b>. Preço único: <b>R$ 35,00</b>.</p></header><div class="wrap grid"><section class="card"><h2>Cardápio</h2><div id="menu"></div><p class="small">Molho artesanal de tomate pelado, alho e manjericão. Massa pré-assada.</p></section><aside class="card"><h2>Seu pedido</h2><div id="cart"></div><div class="card" style="margin-top:10px"><h3 style="margin:0 0 8px">Entrega / Retirada</h3><div class="row"><select id="retirada"><option>Retirada no térreo</option><option>Entrega no bloco</option></select><input id="apto" placeholder="Bloco/Ap." maxlength="8"></div><div class="row"><select id="janela"><option>Hoje 19:00–19:30</option><option>Hoje 19:30–20:00</option><option>Hoje 20:00–20:30</option></select><select id="pagamento"><option>Pix</option><option>Dinheiro (troco)</option></select></div><input id="obs" placeholder="Observações (sem cebola, ponto...)"><p class="small">Chave Pix: <b id="pixKeyLabel">51998071649</b></p><button class="btn" style="width:100%;margin-top:8px" id="btnEnviar" disabled>Enviar pedido via WhatsApp</button><p class="small">Ao clicar, abriremos o WhatsApp com o resumo do pedido.</p></div><p class="footer">JJ Solutions © 2025</p></aside></div><script>
+const WHATSAPP_NUMBER="5551998071649",PIX_KEY="51998071649";document.getElementById("pixKeyLabel").textContent=PIX_KEY;
+// catálogo (30 cm, preço único 35)
+const PRECO=35.00,TAMANHO="30 cm";
+const MENU=[{id:1,nome:"Calabresa",desc:"Calabresa artesanal e cebola."},{id:2,nome:"Marguerita",desc:"Mussarela, tomate e manjericão."},{id:3,nome:"Bacon",desc:"Bacon crocante e mussarela."},{id:4,nome:"Mussarela",desc:"Mussarela e orégano."}];
+const menuEl=document.getElementById("menu");
+MENU.forEach(p=>{const el=document.createElement("div");el.className="item";el.innerHTML=`<div style="flex:1"><h3>${p.nome}</h3><div class="muted">${p.desc}</div><div class="row"><input id="qty-${p.id}" type="number" min="1" value="1"><button class="btn" onclick="addToCart(${p.id})">Adicionar</button></div></div><div class="price">${PRECO.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</div>`;menuEl.appendChild(el)});
+let cart=[];
+function addToCart(id){const item=MENU.find(i=>i.id===id),qty=parseInt(document.getElementById(`qty-${id}`).value||1,10);cart.push({id:Date.now(),nome:item.nome,tamanho:TAMANHO,precoUnit:PRECO,qty});renderCart()}
+function removeItem(id){cart=cart.filter(i=>i.id!==id);renderCart()}
+function formatBR(n){return n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+function renderCart(){const cartEl=document.getElementById("cart");if(cart.length===0){cartEl.innerHTML=`<p class="small">Seu carrinho está vazio.</p>`;document.getElementById("btnEnviar").disabled=true;return}
+let html=cart.map(i=>`<div class="cart-item"><div><b>${i.nome}</b> — ${i.tamanho}<div class="small">Qtd ${i.qty} · ${formatBR(i.precoUnit)} un.</div></div><button onclick="removeItem(${i.id})">remover</button></div>`).join("");
+const subtotal=cart.reduce((s,i)=>s+i.precoUnit*i.qty,0),taxa=("Entrega no bloco"===document.getElementById("retirada")?.value)?5:0,total=subtotal+taxa;
+html+=`<div class="total"><span>Subtotal</span><span>${formatBR(subtotal)}</span></div><div class="total"><span>Entrega</span><span>${formatBR(taxa)}</span></div><div class="total"><span>Total</span><span>${formatBR(total)}</span></div>`;
+cartEl.innerHTML=html;document.getElementById("btnEnviar").disabled=false}
+function montarMensagem(){const retirada=document.getElementById("retirada").value,apto=document.getElementById("apto").value.trim(),janela=document.getElementById("janela").value,pagamento=document.getElementById("pagamento").value,obs=document.getElementById("obs").value.trim(),linhas=[];
+linhas.push("*Novo pedido — Pizzas do Condomínio*"),linhas.push("\n*Itens:*"),cart.forEach(i=>linhas.push(`• ${i.qty}x ${i.nome} (${i.tamanho}) — ${formatBR(i.precoUnit*i.qty)}`));
+const subtotal=cart.reduce((s,i)=>s+i.precoUnit*i.qty,0),taxa=("Entrega no bloco"===retirada)?5:0,total=subtotal+taxa;
+linhas.push(`\nSubtotal: ${formatBR(subtotal)}`),linhas.push(`Entrega: ${formatBR(taxa)}`),linhas.push(`*Total:* ${formatBR(total)}`),linhas.push(`\n*Entrega/Retirada:* ${retirada}${apto?` — ${apto}`:""}`),linhas.push(`*Janela:* ${janela}`),linhas.push(`*Pagamento:* ${pagamento}`),"Pix"===pagamento&&linhas.push(`Chave Pix: ${PIX_KEY}`),obs&&linhas.push(`\nObs.: ${obs}`);return linhas.join("\n")}
+document.getElementById("btnEnviar").addEventListener("click",()=>{if(cart.length===0)return;const msg=encodeURIComponent(montarMensagem()),url=`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;window.open(url,"_blank")});
+</script></body></html>
