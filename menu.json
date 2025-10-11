@@ -2,25 +2,25 @@
   {
     "id": 1,
     "nome": "Calabresa",
-    "desc": "Molho de tomate, mussarela, calabresa e orégano",
+    "desc": "Molho pomodoro caseiro, mussarela, calabresa, cebola e orégano",
     "available": true
   },
   {
     "id": 2,
     "nome": "Marguerita",
-    "desc": "Molho de tomate, mussarela, tomate e manjericão fresco",
-    "available": true
+    "desc": "Molho pomodoro caseiro, mussarela, tomate, manjericão fresco e orégano",
+    "available": false
   },
   {
     "id": 3,
     "nome": "Bacon",
-    "desc": "Molho de tomate, mussarela, bacon crocante e orégano",
+    "desc": "Molho pomodoro caseiro, mussarela, bacon e orégano",
     "available": true
   },
   {
     "id": 4,
     "nome": "Mussarela",
-    "desc": "Molho de tomate e mussarela especial",
+    "desc": "Molho pomodoro caseiro, mussarela e orégano",
     "available": true
   }
 ]
