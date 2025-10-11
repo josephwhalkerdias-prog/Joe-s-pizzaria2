@@ -3,24 +3,28 @@
     "id": 1,
     "nome": "Calabresa",
     "desc": "Molho pomodoro caseiro, mussarela, calabresa, cebola e orégano",
+    "price": 36.00,
     "available": true
   },
   {
     "id": 2,
     "nome": "Marguerita",
     "desc": "Molho pomodoro caseiro, mussarela, tomate, manjericão fresco e orégano",
+    "price": 36.00,
     "available": false
   },
   {
     "id": 3,
     "nome": "Bacon",
     "desc": "Molho pomodoro caseiro, mussarela, bacon e orégano",
+    "price": 38.00,
     "available": true
   },
   {
     "id": 4,
     "nome": "Mussarela",
     "desc": "Molho pomodoro caseiro, mussarela e orégano",
+    "price": 35.00,
     "available": true
   }
 ]
