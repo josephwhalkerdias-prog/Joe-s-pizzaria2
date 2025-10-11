@@ -3,176 +3,176 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Joe’s Pizzaria</title>
+  <title>Joe’s Pizzaria — Retirada</title>
   <style>
-    :root{
-      --bg:#0f0f10;--card:#17181b;--muted:#9aa0a6;--txt:#f1f3f4;--brand:#ff7a00;
-    }
-    *{box-sizing:border-box;font-family:system-ui,Segoe UI,Roboto,sans-serif}
+    :root{--bg:#0f0f10;--card:#17181b;--muted:#9aa0a6;--txt:#f1f3f4;--brand:#ff7a00}
+    *{box-sizing:border-box;font-family:system-ui,Segoe UI,Roboto,Inter,sans-serif}
     body{margin:0;background:var(--bg);color:var(--txt)}
-    header{padding:20px 16px;border-bottom:1px solid var(--card)}
+    header{padding:16px;border-bottom:1px solid #25272c}
     header h1{margin:0;font-size:22px}
     header p{margin:6px 0 0;color:var(--muted)}
     .wrap{max-width:980px;margin:0 auto;padding:16px}
-    .item{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:12px;border-radius:8px;margin-bottom:10px}
+    .card{background:var(--card);border:1px solid #25272c;border-radius:12px;padding:14px;margin-bottom:16px}
+    .item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border:1px solid #2a2e34;border-radius:10px;margin-bottom:10px}
     .item h3{margin:0 0 4px}
-    .muted{color:var(--muted);font-size:14px}
-    input[type=number]{width:50px;text-align:center;padding:4px}
-    input,select,textarea{width:100%;padding:8px;border-radius:6px;border:1px solid #333;background:#1f1f1f;color:var(--txt);margin-top:4px}
-    .btn{background:var(--brand);border:none;color:#fff;padding:10px 14px;border-radius:6px;cursor:pointer;width:100%}
-    .btn:disabled{background:#555;cursor:not-allowed}
-    .cart-item{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-    .total{display:flex;justify-content:space-between;margin-top:8px;font-weight:bold}
-    .pill{display:inline-block;background:var(--muted);padding:2px 8px;border-radius:12px;font-size:12px;color:#111}
-    .small{font-size:13px;color:var(--muted)}
+    .muted{color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #2a2e34;background:#121316;color:var(--txt)}
+    input[type=number]{width:80px;text-align:center}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{background:var(--brand);border:1px solid #b35400;color:#000;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .pill{display:inline-block;background:#2b2f35;color:#cfd3d7;border-radius:999px;padding:2px 8px;font-size:12px;margin-left:6px}
+    .cart-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed #2a2e34}
+    .cart-item:last-child{border-bottom:0}
+    .total{display:flex;justify-content:space-between;margin-top:8px;font-weight:700}
+    .small{font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
-  <header>
-    <h1>Joe’s Pizzaria</h1>
-    <p>🍕 Pizzas artesanais de 30 cm — preço único R$ 35</p>
+  <header class="wrap">
+    <h1>Joe’s Pizzaria — Retirada</h1>
+    <p>🍕 Pizzas 30 cm — preço único <b>R$ 35,00</b></p>
+    <p class="small">📍 Retirada: <b>RUA ESQUADRÃO PAMPA - Bloco 16 - Apto 101</b></p>
+    <p class="small">🧾 Nº do pedido: <b id="pedidoId">…</b></p>
   </header>
 
-  <div class="wrap">
-    <h2>Cardápio</h2>
-    <div id="menu"></div>
+  <main class="wrap">
+    <section class="card">
+      <h2>Cardápio</h2>
+      <div id="menu"></div>
+      <p class="small">* Itens esgotados ficam desabilitados automaticamente.</p>
+    </section>
 
-    <h2>Carrinho</h2>
-    <div id="cart"></div>
+    <section class="card">
+      <h2>Carrinho</h2>
+      <div id="cart"></div>
+    </section>
 
-    <h2>Entrega e Pagamento</h2>
-
-    <label>Forma de entrega:</label>
-    <select id="retirada">
-      <option>Retirada no térreo</option>
-      <option>Entrega no condomínio</option>
-    </select><br><br>
-
-    <label>Rua:</label>
-    <input id="rua" placeholder="Ex: Rua das Palmeiras"><br><br>
-
-    <label>Casa / Bloco:</label>
-    <input id="bloco" placeholder="Ex: Bloco B ou Casa 12"><br><br>
-
-    <label>Apartamento:</label>
-    <input id="apto" placeholder="Ex: 302"><br><br>
-
-    <label>Horário desejado:</label>
-    <input id="janela" placeholder="Ex: 19h - 19h30"><br><br>
-
-    <label>Pagamento:</label>
-    <select id="pagamento">
-      <option>Pix</option>
-      <option>Dinheiro</option>
-    </select><br><br>
-
-    <label>Observações:</label>
-    <textarea id="obs" rows="2"></textarea><br><br>
-
-    <button id="btnEnviar" class="btn" disabled>Enviar pedido pelo WhatsApp</button>
-
-    <p class="small">💳 Chave Pix: <span id="pixKeyLabel">51998071649</span></p>
-  </div>
+    <section class="card">
+      <h2>Dados para retirada</h2>
+      <div class="row">
+        <div style="flex:1 1 260px">
+          <label>Nome de quem vai retirar</label>
+          <input id="cliente" placeholder="Ex.: José da Silva">
+        </div>
+      </div>
+      <p class="small">💳 Chave Pix: <b>51998071649</b></p>
+      <button id="btnEnviar" class="btn" disabled>Enviar pedido pelo WhatsApp</button>
+      <p class="small">Abriremos o WhatsApp com o resumo do pedido para confirmação.</p>
+    </section>
+  </main>
 
   <script>
-    const WHATSAPP_NUMBER="5551998071649", PIX_KEY="51998071649";
-    document.getElementById("pixKeyLabel").textContent=PIX_KEY;
-    const PRECO=35.00, TAMANHO="30 cm";
+    // ---- Configurações
+    const WHATSAPP_NUMBER = "5551998071649";
+    const ENDERECO_RETIRADA = "RUA ESQUADRÃO PAMPA - Bloco 16 - Apto 101";
+    const PRECO = 35.00;
+    const TAMANHO = "30 cm";
 
+    // ---- Número do pedido (YYYYMMDD-###, reinicia por dia)
+    function gerarNumeroPedido(){
+      const d = new Date();
+      const dia = d.toISOString().slice(0,10).replace(/-/g,''); // YYYYMMDD
+      const key = 'orders:'+dia;
+      const n = (parseInt(localStorage.getItem(key) || '0',10) + 1);
+      localStorage.setItem(key, String(n));
+      return `${dia}-${String(n).padStart(3,'0')}`;
+    }
+    const PEDIDO_ID = gerarNumeroPedido();
+    document.getElementById('pedidoId').textContent = PEDIDO_ID;
+
+    // ---- Util
     function formatBR(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
-    const menuEl=document.getElementById('menu');
-    let cart=[];
 
-    // Carregar menu do arquivo menu.json
+    // ---- Cardápio (lido do menu.json)
+    const menuEl = document.getElementById('menu');
+    let cart = [];
+
     async function carregarMenu(){
       try{
-        const resp = await fetch('./menu.json',{cache:'no-store'});
+        const resp = await fetch('menu.json', {cache:'no-store'});
         const MENU = await resp.json();
-        menuEl.innerHTML='';
+        menuEl.innerHTML = '';
         MENU.forEach(p=>{
-          const esgotado=p.available===false;
-          const el=document.createElement('div');
-          el.className='item';
-          el.innerHTML=`
+          const esgotado = p.available===false;
+          const el = document.createElement('div');
+          el.className = 'item';
+          el.innerHTML = `
             <div style="flex:1">
-              <h3>${p.nome} ${esgotado?'<span class="pill">Esgotada</span>':''}</h3>
+              <h3>${p.nome}${esgotado?'<span class="pill">Esgotada</span>':''}</h3>
               <div class="muted">${p.desc}</div>
-              <div style="margin-top:8px">
+              <div class="row" style="margin-top:8px">
                 <input id="qty-${p.id}" type="number" min="1" value="1" ${esgotado?'disabled':''}>
-                <button class="btn" ${esgotado?'disabled':''} onclick="addToCart(${p.id}, '${p.nome}')">Adicionar</button>
+                <button class="btn" ${esgotado?'disabled':''}
+                        onclick="addToCart(${p.id},'${p.nome}')">Adicionar</button>
               </div>
             </div>
-            <div class="price">${formatBR(PRECO)}</div>`;
+            <div style="font-weight:700">${formatBR(PRECO)}</div>`;
           menuEl.appendChild(el);
         });
       }catch(e){
-        menuEl.innerHTML='<p class="muted">Não consegui carregar o cardápio.</p>';
+        menuEl.innerHTML = '<p class="muted">Não consegui carregar o cardápio.</p>';
       }
     }
     carregarMenu();
 
-    function addToCart(id,nome){
-      const qty=parseInt(document.getElementById(`qty-${id}`).value||1,10);
-      cart.push({id:Date.now(),nome,tamanho:TAMANHO,precoUnit:PRECO,qty});
+    // ---- Carrinho
+    function addToCart(id, nome){
+      const qty = parseInt(document.getElementById(`qty-${id}`).value||1,10);
+      cart.push({id:Date.now(), nome, tamanho:TAMANHO, precoUnit:PRECO, qty});
       renderCart();
     }
-    function removeItem(id){cart=cart.filter(i=>i.id!==id);renderCart();}
+    function removeItem(id){ cart = cart.filter(i=>i.id!==id); renderCart(); }
 
     function renderCart(){
-      const cartEl=document.getElementById('cart');
+      const cartEl = document.getElementById('cart');
       if(cart.length===0){
-        cartEl.innerHTML='<p class="small">Seu carrinho está vazio.</p>';
-        document.getElementById('btnEnviar').disabled=true;return;
+        cartEl.innerHTML = '<p class="muted">Seu carrinho está vazio.</p>';
+        document.getElementById('btnEnviar').disabled = true;
+        return;
       }
-      let html=cart.map(i=>`
+      let html = cart.map(i=>`
         <div class="cart-item">
           <div><b>${i.nome}</b> — ${i.tamanho}
             <div class="small">Qtd ${i.qty} · ${formatBR(i.precoUnit)} un.</div>
           </div>
-          <button onclick="removeItem(${i.id})">remover</button>
+          <button class="btn" onclick="removeItem(${i.id})">remover</button>
         </div>`).join('');
-      const subtotal=cart.reduce((s,i)=>s+i.precoUnit*i.qty,0);
-      const taxa=(document.getElementById('retirada')?.value==='Entrega no condomínio')?5:0;
-      const total=subtotal+taxa;
-      html+=`
-        <div class="total"><span>Subtotal</span><span>${formatBR(subtotal)}</span></div>
-        <div class="total"><span>Entrega</span><span>${formatBR(taxa)}</span></div>
-        <div class="total"><span>Total</span><span>${formatBR(total)}</span></div>`;
-      cartEl.innerHTML=html;
-      document.getElementById('btnEnviar').disabled=false;
+
+      const total = cart.reduce((s,i)=>s+i.precoUnit*i.qty,0);
+      html += `<div class="total"><span>Total</span><span>${formatBR(total)}</span></div>`;
+      cartEl.innerHTML = html;
+
+      // habilita botão só se houver nome
+      const nomeOk = (document.getElementById('cliente').value.trim().length > 0);
+      document.getElementById('btnEnviar').disabled = !nomeOk;
     }
 
+    // Revalida nome -> habilita botão
+    document.getElementById('cliente').addEventListener('input', renderCart);
+
+    // ---- Mensagem WhatsApp (Somente Retirada)
     function montarMensagem(){
-      const retirada=document.getElementById('retirada').value;
-      const rua=document.getElementById('rua').value.trim();
-      const bloco=document.getElementById('bloco').value.trim();
-      const apto=document.getElementById('apto').value.trim();
-      const janela=document.getElementById('janela').value;
-      const pagamento=document.getElementById('pagamento').value;
-      const obs=document.getElementById('obs').value.trim();
-      const linhas=["*Novo pedido — Joe’s Pizzaria*","\n*Itens:*"];
-      cart.forEach(i=>linhas.push(`• ${i.qty}x ${i.nome} (${i.tamanho}) — ${formatBR(i.precoUnit*i.qty)}`));
-      const subtotal=cart.reduce((s,i)=>s+i.precoUnit*i.qty,0);
-      const taxa=(retirada==='Entrega no condomínio')?5:0;
-      const total=subtotal+taxa;
-      linhas.push(`\nSubtotal: ${formatBR(subtotal)}`);
-      linhas.push(`Entrega: ${formatBR(taxa)}`);
-      linhas.push(`*Total:* ${formatBR(total)}`);
-      linhas.push(`\n*Forma de entrega:* ${retirada}`);
-      if(rua){linhas.push(`Rua: ${rua}`);}
-      if(bloco){linhas.push(`Bloco/Casa: ${bloco}`);}
-      if(apto){linhas.push(`Apartamento: ${apto}`);}
-      linhas.push(`*Horário:* ${janela}`);
-      linhas.push(`*Pagamento:* ${pagamento}`);
-      if(pagamento==='Pix'){linhas.push(`Chave Pix: ${PIX_KEY}`);}
-      if(obs){linhas.push(`\nObs.: ${obs}`);}
+      const cliente = document.getElementById('cliente').value.trim();
+      const total = cart.reduce((s,i)=>s+i.precoUnit*i.qty,0);
+
+      const linhas = [];
+      linhas.push(`*Pedido:* ${PEDIDO_ID}`);
+      linhas.push(`*Cliente (retirada):* ${cliente}`);
+      linhas.push(`\n*Itens:*`);
+      cart.forEach(i => linhas.push(`• ${i.qty}x ${i.nome} (${i.tamanho}) — ${formatBR(i.precoUnit*i.qty)}`));
+      linhas.push(`\n*Total:* ${formatBR(total)}`);
+      linhas.push(`\n📍 *Retirar em:* ${ENDERECO_RETIRADA}`);
+
       return linhas.join('\n');
     }
 
-    document.getElementById('btnEnviar').addEventListener('click',()=>{
-      if(cart.length===0)return;
-      const msg=encodeURIComponent(montarMensagem());
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`,'_blank');
+    document.getElementById('btnEnviar').addEventListener('click', ()=>{
+      if(cart.length===0) return;
+      const cliente = document.getElementById('cliente').value.trim();
+      if(!cliente){ alert('Informe o nome de quem vai retirar.'); return; }
+      const msg = encodeURIComponent(montarMensagem());
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
     });
   </script>
 </body>
