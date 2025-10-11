@@ -31,7 +31,7 @@
 <body>
   <header class="wrap">
     <h1>Joe’s Pizzaria — Retirada</h1>
-    <p>🍕 Pizzas 30 cm — preço único <b>R$ 35,00</b></p>
+    <p>🍕 Pizzas 30 cm — valores por sabor</p>
     <p class="small">📍 Retirada: <b>RUA ESQUADRÃO PAMPA - Bloco 16 - Apto 101</b></p>
     <p class="small">🧾 Nº do pedido: <b id="pedidoId">…</b></p>
   </header>
@@ -56,6 +56,12 @@
           <input id="cliente" placeholder="Ex.: José da Silva">
         </div>
       </div>
+      <div class="row" style="margin-top:10px">
+        <div style="flex:1 1 260px">
+          <label>Observações do pedido (ex.: retirar cebola)</label>
+          <textarea id="obs" rows="2" placeholder="Algum ajuste nos ingredientes?"></textarea>
+        </div>
+      </div>
       <p class="small">💳 Chave Pix: <b>51998071649</b></p>
       <button id="btnEnviar" class="btn" disabled>Enviar pedido pelo WhatsApp</button>
       <p class="small">Abriremos o WhatsApp com o resumo do pedido para confirmação.</p>
@@ -63,13 +69,12 @@
   </main>
 
   <script>
-    // ---- Configurações
+    // ---- Config
     const WHATSAPP_NUMBER = "5551998071649";
     const ENDERECO_RETIRADA = "RUA ESQUADRÃO PAMPA - Bloco 16 - Apto 101";
-    const PRECO = 35.00;
     const TAMANHO = "30 cm";
 
-    // ---- Número do pedido (YYYYMMDD-###, reinicia por dia)
+    // Nº do pedido (YYYYMMDD-###, reinicia por dia)
     function gerarNumeroPedido(){
       const d = new Date();
       const dia = d.toISOString().slice(0,10).replace(/-/g,''); // YYYYMMDD
@@ -81,13 +86,14 @@
     const PEDIDO_ID = gerarNumeroPedido();
     document.getElementById('pedidoId').textContent = PEDIDO_ID;
 
-    // ---- Util
+    // Util
     function formatBR(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
 
-    // ---- Cardápio (lido do menu.json)
+    // Estado
     const menuEl = document.getElementById('menu');
     let cart = [];
 
+    // Carregar menu com PREÇO por item
     async function carregarMenu(){
       try{
         const resp = await fetch('menu.json', {cache:'no-store'});
@@ -95,6 +101,7 @@
         menuEl.innerHTML = '';
         MENU.forEach(p=>{
           const esgotado = p.available===false;
+          const price = Number(p.price ?? 0);
           const el = document.createElement('div');
           el.className = 'item';
           el.innerHTML = `
@@ -104,10 +111,10 @@
               <div class="row" style="margin-top:8px">
                 <input id="qty-${p.id}" type="number" min="1" value="1" ${esgotado?'disabled':''}>
                 <button class="btn" ${esgotado?'disabled':''}
-                        onclick="addToCart(${p.id},'${p.nome}')">Adicionar</button>
+                        onclick="addToCart(${p.id},'${p.nome}',${price})">Adicionar</button>
               </div>
             </div>
-            <div style="font-weight:700">${formatBR(PRECO)}</div>`;
+            <div style="font-weight:700">${formatBR(price)}</div>`;
           menuEl.appendChild(el);
         });
       }catch(e){
@@ -116,10 +123,10 @@
     }
     carregarMenu();
 
-    // ---- Carrinho
-    function addToCart(id, nome){
+    // Carrinho
+    function addToCart(id, nome, precoUnit){
       const qty = parseInt(document.getElementById(`qty-${id}`).value||1,10);
-      cart.push({id:Date.now(), nome, tamanho:TAMANHO, precoUnit:PRECO, qty});
+      cart.push({id:Date.now(), nome, tamanho:TAMANHO, precoUnit, qty});
       renderCart();
     }
     function removeItem(id){ cart = cart.filter(i=>i.id!==id); renderCart(); }
@@ -143,17 +150,16 @@
       html += `<div class="total"><span>Total</span><span>${formatBR(total)}</span></div>`;
       cartEl.innerHTML = html;
 
-      // habilita botão só se houver nome
       const nomeOk = (document.getElementById('cliente').value.trim().length > 0);
       document.getElementById('btnEnviar').disabled = !nomeOk;
     }
 
-    // Revalida nome -> habilita botão
     document.getElementById('cliente').addEventListener('input', renderCart);
 
-    // ---- Mensagem WhatsApp (Somente Retirada)
+    // WhatsApp
     function montarMensagem(){
       const cliente = document.getElementById('cliente').value.trim();
+      const obs = document.getElementById('obs').value.trim();
       const total = cart.reduce((s,i)=>s+i.precoUnit*i.qty,0);
 
       const linhas = [];
@@ -162,6 +168,7 @@
       linhas.push(`\n*Itens:*`);
       cart.forEach(i => linhas.push(`• ${i.qty}x ${i.nome} (${i.tamanho}) — ${formatBR(i.precoUnit*i.qty)}`));
       linhas.push(`\n*Total:* ${formatBR(total)}`);
+      if(obs) linhas.push(`\n*Observações:* ${obs}`);
       linhas.push(`\n📍 *Retirar em:* ${ENDERECO_RETIRADA}`);
 
       return linhas.join('\n');
