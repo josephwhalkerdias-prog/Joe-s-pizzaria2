@@ -36,6 +36,42 @@
     "estoque": 8
   },
   {
+    "id": 10,
+    "nome": "Quatro Queijos",
+    "desc": "Molho pomodoro caseiro, mussarela, queijo provolone, cheddar e catupiry Polenghi",
+    "price": 48.00,
+    "available": true,
+    "categoria": "Pizzas Assadas",
+    "estoque": 5
+  },
+  {
+    "id": 11,
+    "nome": "Lombo Canadense com Cheddar",
+    "desc": "Molho pomodoro caseiro, mussarela, lombo canadense, queijo cheddar e orégano",
+    "price": 45.00,
+    "available": true,
+    "categoria": "Pizzas Assadas",
+    "estoque": 5
+  },
+  {
+    "id": 12,
+    "nome": "Lombo Canadense",
+    "desc": "Molho pomodoro caseiro, mussarela, lombo canadense e orégano",
+    "price": 42.00,
+    "available": true,
+    "categoria": "Pizzas Assadas",
+    "estoque": 5
+  },
+  {
+    "id": 13,
+    "nome": "Pepperoni",
+    "desc": "Molho pomodoro caseiro, mussarela, pepperoni e orégano",
+    "price": 48.00,
+    "available": true,
+    "categoria": "Pizzas Assadas",
+    "estoque": 5
+  },
+  {
     "id": 5,
     "nome": "Pizza de Calabresa Congelada",
     "desc": " Mussarela,  molho pomodoro caseiro, Calabresa e orégano (Congelada, para assar em casa)",
