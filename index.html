@@ -46,10 +46,16 @@
 
   <main class="wrap">
     <section class="card">
-      <h2>Cardápio</h2>
-      <div id="menu"></div>
-      <p class="small">* Itens esgotados ficam desabilitados automaticamente.</p>
-    </section>
+    <h2>Cardápio</h2>
+    
+    <h3>Pizzas Assadas (30 cm)</h3>
+    <div id="menuAssadas"></div>
+
+    <h3 style="margin-top: 16px;">Pizzas Congeladas</h3>
+    <div id="menuCongeladas"></div>
+
+    <p class="small">* Itens esgotados ficam desabilitados automaticamente.</p>
+</section>
 
     <section class="card">
       <h2>Carrinho</h2>
@@ -97,14 +103,15 @@
       localStorage.setItem(key, String(n));
       return `${dia}-${String(n).padStart(3,'0')}`;
     }
-    const PEDIDO_ID = gerarNumeroPedido();
+    const PEDIDO_ID = gerarNumeroNumeroPedido();
     document.getElementById('pedidoId').textContent = PEDIDO_ID;
 
     // Util
     function formatBR(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
 
     // Estado
-    const menuEl = document.getElementById('menu');
+    const menuAssadasEl = document.getElementById('menuAssadas'); // Novo!
+    const menuCongeladasEl = document.getElementById('menuCongeladas'); // Novo!
     let cart = [];
 
     // Carregar menu com PREÇO por item (price no menu.json)
@@ -112,12 +119,21 @@
       try{
         const resp = await fetch('menu.json', {cache:'no-store'});
         const MENU = await resp.json();
-        menuEl.innerHTML = '';
+        
+        // Limpar os containers
+        menuAssadasEl.innerHTML = '';
+        menuCongeladasEl.innerHTML = '';
+
         MENU.forEach(p=>{
           const esgotado = p.available===false;
           const price = Number(p.price ?? 0);
+          
           const el = document.createElement('div');
           el.className = 'item';
+          
+          // O tamanho (tamanho:TAMANHO) só será usado para Pizzas Assadas
+          const itemTamanho = p.categoria === 'Pizzas Assadas' ? TAMANHO : '';
+          
           el.innerHTML = `
             <div style="flex:1">
               <h3>${p.nome}${esgotado?'<span class="pill">Esgotada</span>':''}</h3>
@@ -125,25 +141,50 @@
               <div class="row" style="margin-top:8px">
                 <input id="qty-${p.id}" type="number" min="1" value="1" ${esgotado?'disabled':''}>
                 <button class="btn" ${esgotado?'disabled':''}
-                        onclick="addToCart(${p.id},'${p.nome}',${price})">Adicionar</button>
+                        onclick="addToCart(${p.id},'${p.nome}',${price}, '${itemTamanho}')">Adicionar</button>
               </div>
             </div>
             <div style="font-weight:700">${formatBR(price)}</div>`;
-          menuEl.appendChild(el);
+
+          // Novo! Adiciona o item na DIV correta baseada na categoria
+          if(p.categoria === 'Pizzas Assadas'){
+              menuAssadasEl.appendChild(el);
+          } else if (p.categoria === 'Pizzas Congeladas') {
+              menuCongeladasEl.appendChild(el);
+          }
         });
       }catch(e){
-        menuEl.innerHTML = '<p class="muted">Não consegui carregar o cardápio.</p>';
+        menuAssadasEl.innerHTML = '<p class="muted">Não consegui carregar o cardápio de Pizzas Assadas.</p>';
+        menuCongeladasEl.innerHTML = '<p class="muted">Não consegui carregar o cardápio de Pizzas Congeladas.</p>';
       }
     }
     carregarMenu();
 
     // Carrinho
-    function addToCart(id, nome, precoUnit){
+    function addToCart(id, nome, precoUnit, tamanho){
       const qty = parseInt(document.getElementById(`qty-${id}`).value||1,10);
-      cart.push({id:Date.now(), nome, tamanho:TAMANHO, precoUnit, qty});
+      
+      // Encontrar se o item já existe no carrinho pelo nome
+      const existingItem = cart.find(i => i.nome === nome);
+
+      if (existingItem) {
+        // Se existir, apenas incrementa a quantidade
+        existingItem.qty += qty;
+      } else {
+        // Se não existir, adiciona como um novo item
+        // O ID é um timestamp, mas usamos o nome para agrupar.
+        cart.push({id:Date.now(), nome, tamanho, precoUnit, qty}); 
+      }
+      
       renderCart();
     }
-    function removeItem(id){ cart = cart.filter(i=>i.id!==id); renderCart(); }
+    
+    // Agora o removeItem deve usar o 'nome' ou um ID único para o sabor, não o Date.now()
+    // Como estamos agrupando por nome, vamos alterar a função de remoção
+    function removeItemByNome(nome){ 
+        cart = cart.filter(i=>i.nome!==nome); 
+        renderCart(); 
+    }
 
     function renderCart(){
       const cartEl = document.getElementById('cart');
@@ -152,12 +193,14 @@
         document.getElementById('btnEnviar').disabled = true;
         return;
       }
+      
       let html = cart.map(i=>`
         <div class="cart-item">
-          <div><b>${i.nome}</b> — ${i.tamanho}
-            <div class="small">Qtd ${i.qty} · ${formatBR(i.precoUnit)} un.</div>
+          <div>
+            <b>${i.qty}x ${i.nome}</b> ${i.tamanho ? '— ' + i.tamanho : ''}
+            <div class="small">${formatBR(i.precoUnit)} cada. Total: ${formatBR(i.precoUnit*i.qty)}</div>
           </div>
-          <button class="btn" onclick="removeItem(${i.id})">remover</button>
+          <button class="btn ghost small" onclick="removeItemByNome('${i.nome}')">remover</button>
         </div>`).join('');
 
       const total = cart.reduce((s,i)=>s+i.precoUnit*i.qty,0);
@@ -193,7 +236,8 @@
       linhas.push(`*Pedido:* ${PEDIDO_ID}`);
       linhas.push(`*Cliente (retirada):* ${cliente}`);
       linhas.push(`\n*Itens:*`);
-      cart.forEach(i => linhas.push(`• ${i.qty}x ${i.nome} (${i.tamanho}) — ${formatBR(i.precoUnit*i.qty)}`));
+      // Monta as linhas, ignorando o tamanho se ele for vazio
+      cart.forEach(i => linhas.push(`• ${i.qty}x ${i.nome} ${i.tamanho ? '(' + i.tamanho + ')' : ''} — ${formatBR(i.precoUnit*i.qty)}`));
       linhas.push(`\n*Total:* ${formatBR(total)}`);
       if(obs) linhas.push(`\n*Observações:* ${obs}`);
       linhas.push(`\n📍 *Retirar em:* ${ENDERECO_RETIRADA}`);
@@ -210,5 +254,3 @@
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
     });
   </script>
-</body>
-</html>
