@@ -248,6 +248,38 @@
     async function carregarMenu(){
       try{
         const resp = await fetch('menu.json', {cache:'no-store'});
+  <script>
+    // ---- Config
+    const WHATSAPP_NUMBER = "5551998071649";
+    const ENDERECO_RETIRADA = "RUA ESQUADRÃO PAMPA - Bloco 16 - Apto 101";
+    const PIX_KEY = document.getElementById('pixKey').textContent.trim();
+    const TAMANHO = "30 cm";
+
+    // Nº do pedido (YYYYMMDD-###, reinicia por dia)
+    function gerarNumeroPedido(){
+      const d = new Date();
+      const dia = d.toISOString().slice(0,10).replace(/-/g,'');
+      const key = 'orders:'+dia;
+      const n = (parseInt(localStorage.getItem(key) || '0',10) + 1);
+      localStorage.setItem(key, String(n));
+      return `${dia}-${String(n).padStart(3,'0')}`;
+    }
+    const PEDIDO_ID = gerarNumeroPedido();
+    document.getElementById('pedidoId').textContent = PEDIDO_ID;
+
+    // Util
+    function formatBR(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+
+    // Estado
+    const menuAssadasEl = document.getElementById('menuAssadas');
+    const menuCongeladasEl = document.getElementById('menuCongeladas');
+    let cart = [];
+    let MENU_DATA = []; // NOVO: Variável global para armazenar o menu completo
+
+    // Carregar menu com PREÇO por item (price no menu.json)
+    async function carregarMenu(){
+      try{
+        const resp = await fetch('menu.json', {cache:'no-store'});
         MENU_DATA = await resp.json(); // NOVO: Armazena o menu
 
         // Limpar os containers
