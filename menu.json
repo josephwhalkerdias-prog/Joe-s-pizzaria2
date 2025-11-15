@@ -4,27 +4,71 @@
     "nome": "Calabresa",
     "desc": "Molho pomodoro caseiro, mussarela, calabresa, cebola e orégano",
     "price": 36.00,
-    "available": true
+    "available": true,
+    "categoria": "Pizzas Assadas"
   },
   {
     "id": 2,
     "nome": "Marguerita",
     "desc": "Molho pomodoro caseiro, mussarela, tomate, manjericão fresco e orégano",
     "price": 36.00,
-    "available": false
+    "available": false,
+    "categoria": "Pizzas Assadas"
   },
   {
     "id": 3,
     "nome": "Bacon",
     "desc": "Molho pomodoro caseiro, mussarela, bacon e orégano",
     "price": 38.00,
-    "available": true
+    "available": true,
+    "categoria": "Pizzas Assadas"
   },
   {
     "id": 4,
     "nome": "Mussarela",
     "desc": "Molho pomodoro caseiro, mussarela e orégano",
     "price": 35.00,
-    "available": true
+    "available": true,
+    "categoria": "Pizzas Assadas"
+  },
+  {
+    "id": 5,
+    "nome": "Pizza de Calabresa Congelada",
+    "desc": "Calabresa, cebola e orégano (Congelada, para assar em casa)",
+    "price": 30.00,
+    "available": true,
+    "categoria": "Pizzas Congeladas"
+  },
+  {
+    "id": 6,
+    "nome": "Pizza de Bacon Congelada",
+    "desc": "Bacon e mussarela (Congelada, para assar em casa)",
+    "price": 33.00,
+    "available": true,
+    "categoria": "Pizzas Congeladas"
+  },
+  {
+    "id": 7,
+    "nome": "Pizza de Queijo Provolone Congelada",
+    "desc": "Queijo provolone e orégano (Congelada, para assar em casa)",
+    "price": 33.00,
+    "available": true,
+    "categoria": "Pizzas Congeladas"
+  },
+  {
+    "id": 8,
+    "nome": "Pizza Individual Calabresa Congelada",
+    "desc": "Calabresa, cebola e orégano (Congelada Individual)",
+    "price": 13.00,
+    "available": true,
+    "categoria": "Pizzas Congeladas"
+  },
+  {
+    "id": 9,
+    "nome": "Pizza Frango Catupiry Individual Congelada",
+    "desc": "Frango e Catupiry (Congelada Individual)",
+    "price": 15.00,
+    "available": true,
+    "categoria": "Pizzas Congeladas"
   }
 ]
