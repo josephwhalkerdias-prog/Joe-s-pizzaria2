@@ -6,14 +6,14 @@
     "price": 36.00,
     "available": true,
     "categoria": "Pizzas Assadas",
-    "estoque": 10  // Limite de 10 unidades
+    "estoque": 10
   },
   {
     "id": 2,
     "nome": "Marguerita",
     "desc": "Molho pomodoro caseiro, mussarela, tomate, manjericão fresco e orégano",
     "price": 36.00,
-    "available": false, // Como está 'false', o estoque é ignorado (esgotada)
+    "available": false,
     "categoria": "Pizzas Assadas",
     "estoque": 0
   },
@@ -24,7 +24,7 @@
     "price": 38.00,
     "available": true,
     "categoria": "Pizzas Assadas",
-    "estoque": 5 // Limite de 5 unidades
+    "estoque": 5
   },
   {
     "id": 4,
@@ -33,7 +33,7 @@
     "price": 35.00,
     "available": true,
     "categoria": "Pizzas Assadas",
-    "estoque": 8 // Limite de 8 unidades
+    "estoque": 8
   },
   {
     "id": 5,
@@ -42,7 +42,7 @@
     "price": 30.00,
     "available": true,
     "categoria": "Pizzas Congeladas",
-    "estoque": 15 // Limite de 15 unidades
+    "estoque": 15
   },
   {
     "id": 6,
@@ -51,7 +51,7 @@
     "price": 33.00,
     "available": true,
     "categoria": "Pizzas Congeladas",
-    "estoque": 12 // Limite de 12 unidades
+    "estoque": 12
   },
   {
     "id": 7,
@@ -79,7 +79,5 @@
     "available": true,
     "categoria": "Pizzas Congeladas",
     "estoque": 25
-  }
-]
   }
 ]
