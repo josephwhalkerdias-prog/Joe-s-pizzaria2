@@ -3,19 +3,19 @@
     "id": 1,
     "nome": "Calabresa",
     "desc": "Molho pomodoro caseiro, mussarela, calabresa, cebola e orégano",
-    "price": 37.00,
+    "price": 38.00,
     "available": true,
     "categoria": "Pizzas Assadas",
     "estoque": 5
   },
   {
     "id": 2,
-    "nome": "Marguerita",
-    "desc": "Molho pomodoro caseiro, mussarela, tomate, manjericão fresco e orégano",
-    "price": 36.00,
-    "available": false,
+    "nome": "Frango com catupiry",
+    "desc": "Molho pomodoro caseiro, mussarela, frango desfiado, catupiry Polenghi e orégano",
+    "price": 45.00,
+    "available": true,
     "categoria": "Pizzas Assadas",
-    "estoque": 0
+    "estoque": 5
   },
   {
     "id": 3,
