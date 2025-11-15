@@ -29,6 +29,18 @@
     .cart-item:last-child{border-bottom:0}
     .total{display:flex;justify-content:space-between;margin-top:8px;font-weight:700}
     .small{font-size:12px;color:var(--muted)}
+    
+    /* ESTILO NOVO: Aviso de Últimas Unidades */
+    .pill-warning {
+      display: inline-block;
+      padding: 2px 6px;
+      margin-left: 8px;
+      font-size: 0.75em;
+      font-weight: 700;
+      color: #856404;
+      background-color: #ffe8a1;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
@@ -46,16 +58,15 @@
 
   <main class="wrap">
     <section class="card">
-    <h2>Cardápio</h2>
-    
-    <h3>Pizzas Assadas (30 cm)</h3>
-    <div id="menuAssadas"></div>
+      <h2>Cardápio</h2>
+      
+      <h3>Pizzas Assadas (30 cm)</h3>
+      <div id="menuAssadas"></div>
 
-    <h3 style="margin-top: 16px;">Pizzas Congeladas</h3>
-    <div id="menuCongeladas"></div>
-
-    <p class="small">* Itens esgotados ficam desabilitados automaticamente.</p>
-</section>
+      <h3 style="margin-top: 16px;">Pizzas Congeladas</h3>
+      <div id="menuCongeladas"></div>
+      <p class="small">* Itens esgotados ficam desabilitados automaticamente.</p>
+    </section>
 
     <section class="card">
       <h2>Carrinho</h2>
@@ -103,135 +114,6 @@
       localStorage.setItem(key, String(n));
       return `${dia}-${String(n).padStart(3,'0')}`;
     }
-    const PEDIDO_ID = gerarNumeroNumeroPedido();
-    document.getElementById('pedidoId').textContent = PEDIDO_ID;
-
-    // Util
-    function formatBR(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
-
-    // Estado
-    const menuAssadasEl = document.getElementById('menuAssadas'); // Novo!
-    const menuCongeladasEl = document.getElementById('menuCongeladas'); // Novo!
-    let cart = [];
-
-    // Carregar menu com PREÇO por item (price no menu.json)
-    async function carregarMenu(){
-      try{
-        const resp = await fetch('menu.json', {cache:'no-store'});
-        const MENU = await resp.json();
-        
-        // Limpar os containers
-        menuAssadasEl.innerHTML = '';
-        menuCongeladasEl.innerHTML = '';
-
-        MENU.forEach(p=>{
-          const esgotado = p.available===false;
-          const price = Number(p.price ?? 0);
-          
-          const el = document.createElement('div');
-          el.className = 'item';
-          
-          // O tamanho (tamanho:TAMANHO) só será usado para Pizzas Assadas
-          const itemTamanho = p.categoria === 'Pizzas Assadas' ? TAMANHO : '';
-          
-          el.innerHTML = `
-            <div style="flex:1">
-              <h3>${p.nome}${esgotado?'<span class="pill">Esgotada</span>':''}</h3>
-              <div class="muted">${p.desc}</div>
-              <div class="row" style="margin-top:8px">
-                <input id="qty-${p.id}" type="number" min="1" value="1" ${esgotado?'disabled':''}>
-                <button class="btn" ${esgotado?'disabled':''}
-                        onclick="addToCart(${p.id},'${p.nome}',${price}, '${itemTamanho}')">Adicionar</button>
-              </div>
-            </div>
-            <div style="font-weight:700">${formatBR(price)}</div>`;
-
-          // Novo! Adiciona o item na DIV correta baseada na categoria
-          if(p.categoria === 'Pizzas Assadas'){
-              menuAssadasEl.appendChild(el);
-          } else if (p.categoria === 'Pizzas Congeladas') {
-              menuCongeladasEl.appendChild(el);
-          }
-        });
-      }catch(e){
-        menuAssadasEl.innerHTML = '<p class="muted">Não consegui carregar o cardápio de Pizzas Assadas.</p>';
-        menuCongeladasEl.innerHTML = '<p class="muted">Não consegui carregar o cardápio de Pizzas Congeladas.</p>';
-      }
-    }
-    carregarMenu();
-
-    // Carrinho
-    function addToCart(id, nome, precoUnit, tamanho){
-      const qty = parseInt(document.getElementById(`qty-${id}`).value||1,10);
-      
-      // Encontrar se o item já existe no carrinho pelo nome
-      const existingItem = cart.find(i => i.nome === nome);
-
-      if (existingItem) {
-        // Se existir, apenas incrementa a quantidade
-        existingItem.qty += qty;
-      } else {
-        // Se não existir, adiciona como um novo item
-        // O ID é um timestamp, mas usamos o nome para agrupar.
-        cart.push({id:Date.now(), nome, tamanho, precoUnit, qty}); 
-      }
-      
-      renderCart();
-    }
-    
-    // Agora o removeItem deve usar o 'nome' ou um ID único para o sabor, não o Date.now()
-    // Como estamos agrupando por nome, vamos alterar a função de remoção
-    function removeItemByNome(nome){ 
-        cart = cart.filter(i=>i.nome!==nome); 
-        renderCart(); 
-    }
-
-    function renderCart(){
-      const cartEl = document.getElementById('cart');
-      if(cart.length===0){
-        cartEl.innerHTML = '<p class="muted">Seu carrinho está vazio.</p>';
-        document.getElementById('btnEnviar').disabled = true;
-        return;
-      }
-      
-      let html = cart.map(i=>`
-        <div class="cart-item">
-          <div>
-            <b>${i.qty}x ${i.nome}</b> ${i.tamanho ? '— ' + i.tamanho : ''}
-            <div class="small">${formatBR(i.precoUnit)} cada. Total: ${formatBR(i.precoUnit*i.qty)}</div>
-          </div>
-          <button class="btn ghost small" onclick="removeItemByNome('${i.nome}')">remover</button>
-        </div>`).join('');
-
-      const total = cart.reduce((s,i)=>s+i.precoUnit*i.qty,0);
-      html += `<div class="total"><span>Total</span><span>${formatBR(total)}</span></div>`;
-      cartEl.innerHTML = html;
-
-      const nomeOk = (document.getElementById('cliente').value.trim().length > 0);
-      document.getElementById('btnEnviar').disabled = !nomeOk;
-    }
-
-    document.getElementById('cliente').addEventListener('input', renderCart);
-
-    // Copiar Pix
-    document.getElementById('copyPix').addEventListener('click', async ()=>{
-      try{
-  <script>
-    // ---- Config
-    const WHATSAPP_NUMBER = "5551998071649";
-    const ENDERECO_RETIRADA = "RUA ESQUADRÃO PAMPA - Bloco 16 - Apto 101";
-    const PIX_KEY = document.getElementById('pixKey').textContent.trim();
-    const TAMANHO = "30 cm";
-
-    // Nº do pedido (YYYYMMDD-###, reinicia por dia)
-    function gerarNumeroPedido(){
-      const d = new Date();
-      const dia = d.toISOString().slice(0,10).replace(/-/g,'');
-      const key = 'orders:'+dia;
-      const n = (parseInt(localStorage.getItem(key) || '0',10) + 1);
-      localStorage.setItem(key, String(n));
-      return `${dia}-${String(n).padStart(3,'0')}`;
-    }
     const PEDIDO_ID = gerarNumeroPedido();
     document.getElementById('pedidoId').textContent = PEDIDO_ID;
 
@@ -239,64 +121,35 @@
     function formatBR(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
 
     // Estado
-    const menuAssadasEl = document.getElementById('menuAssadas');
-    const menuCongeladasEl = document.getElementById('menuCongeladas');
+    const menuAssadasEl = document.getElementById('menuAssadas'); 
+    const menuCongeladasEl = document.getElementById('menuCongeladas'); 
     let cart = [];
-    let MENU_DATA = []; // NOVO: Variável global para armazenar o menu completo
+    let MENU_DATA = []; // Variável global para armazenar o menu completo (incluindo estoque)
 
     // Carregar menu com PREÇO por item (price no menu.json)
     async function carregarMenu(){
       try{
-        const resp = await fetch('menu.json', {cache:'no-store'});
-  <script>
-    // ---- Config
-    const WHATSAPP_NUMBER = "5551998071649";
-    const ENDERECO_RETIRADA = "RUA ESQUADRÃO PAMPA - Bloco 16 - Apto 101";
-    const PIX_KEY = document.getElementById('pixKey').textContent.trim();
-    const TAMANHO = "30 cm";
-
-    // Nº do pedido (YYYYMMDD-###, reinicia por dia)
-    function gerarNumeroPedido(){
-      const d = new Date();
-      const dia = d.toISOString().slice(0,10).replace(/-/g,'');
-      const key = 'orders:'+dia;
-      const n = (parseInt(localStorage.getItem(key) || '0',10) + 1);
-      localStorage.setItem(key, String(n));
-      return `${dia}-${String(n).padStart(3,'0')}`;
-    }
-    const PEDIDO_ID = gerarNumeroPedido();
-    document.getElementById('pedidoId').textContent = PEDIDO_ID;
-
-    // Util
-    function formatBR(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
-
-    // Estado
-    const menuAssadasEl = document.getElementById('menuAssadas');
-    const menuCongeladasEl = document.getElementById('menuCongeladas');
-    let cart = [];
-    let MENU_DATA = []; // NOVO: Variável global para armazenar o menu completo
-
-    // Carregar menu com PREÇO por item (price no menu.json)
-    async function carregarMenu(){
-      try{
-        const resp = await fetch('menu.json', {cache:'no-store'});
-        MENU_DATA = await resp.json(); // NOVO: Armazena o menu
+        // Certifica que o menu.json não está sendo cacheado, forçando a leitura da versão mais nova
+        const resp = await fetch('menu.json', {cache:'no-store'}); 
+        MENU_DATA = await resp.json(); 
 
         // Limpar os containers
         menuAssadasEl.innerHTML = '';
         menuCongeladasEl.innerHTML = '';
 
         MENU_DATA.forEach(p=>{
-          const esgotado = p.available===false || p.estoque <= 0; // NOVO: Verifica estoque
+          const estoque = Number(p.estoque ?? 0);
+          // Item esgotado se 'available' for false OU estoque for <= 0
+          const esgotado = p.available === false || estoque <= 0; 
           const price = Number(p.price ?? 0);
           
           const el = document.createElement('div');
           el.className = 'item';
           
-          // O tamanho (tamanho:TAMANHO) só será usado para Pizzas Assadas
           const itemTamanho = p.categoria === 'Pizzas Assadas' ? TAMANHO : '';
           
-          const estoqueInfo = p.estoque > 0 && p.available ? ` | ${p.estoque} restantes` : ''; // NOVO: Exibe o estoque
+          // Exibe o estoque se ele for maior que zero e o item estiver disponível
+          const estoqueInfo = estoque > 0 && p.available ? ` | ${estoque} restantes` : ''; 
           
           el.innerHTML = `
             <div style="flex:1">
@@ -306,7 +159,7 @@
               <div class="row" style="margin-top:8px">
                 <input id="qty-${p.id}" type="number" min="1" value="1" ${esgotado?'disabled':''}>
                 <button class="btn" ${esgotado?'disabled':''}
-                        onclick="addToCart(${p.id},'${p.nome}',${price}, '${itemTamanho}', ${p.estoque})">Adicionar</button>
+                        onclick="addToCart(${p.id},'${p.nome}',${price}, '${itemTamanho}', ${estoque})">Adicionar</button>
               </div>
             </div>
             <div style="font-weight:700">${formatBR(price)}</div>`;
@@ -319,30 +172,33 @@
           }
         });
       }catch(e){
-        menuAssadasEl.innerHTML = '<p class="muted">Não consegui carregar o cardápio de Pizzas Assadas.</p>';
-        menuCongeladasEl.innerHTML = '<p class="muted">Não consegui carregar o cardápio de Pizzas Congeladas.</p>';
+        // Exibe erro se o menu.json não puder ser carregado
+        menuAssadasEl.innerHTML = '<p class="muted">⚠️ Erro ao carregar Cardápio Assadas. Verifique o arquivo `menu.json`.</p>';
+        menuCongeladasEl.innerHTML = '<p class="muted">⚠️ Erro ao carregar Cardápio Congeladas. Verifique o arquivo `menu.json`.</p>';
+        console.error("Erro ao carregar menu:", e);
       }
     }
     carregarMenu();
 
     // Carrinho
-    function addToCart(id, nome, precoUnit, tamanho, estoqueMaximo){ // NOVO: Recebe o estoque
+    function addToCart(id, nome, precoUnit, tamanho, estoqueMaximo){ 
       const qty = parseInt(document.getElementById(`qty-${id}`).value||1,10);
       
       const existingItem = cart.find(i => i.nome === nome);
       const novaQtdeTotal = (existingItem ? existingItem.qty : 0) + qty;
 
+      // Lógica de Checagem de Estoque
       if (estoqueMaximo > 0 && novaQtdeTotal > estoqueMaximo) {
-          // NOVO: Verifica a limitação do estoque
           const disponivel = estoqueMaximo - (existingItem ? existingItem.qty : 0);
-          alert(`Desculpe, só temos ${estoqueMaximo} unidade(s) de ${nome} em estoque. Você já tem ${existingItem ? existingItem.qty : 0} no carrinho.`);
+          alert(`Desculpe, só temos ${estoqueMaximo} unidade(s) de ${nome} em estoque. Você já tem ${existingItem ? existingItem.qty : 0} no carrinho. Você pode adicionar no máximo mais ${disponivel} unidade(s).`);
           return;
       }
 
       if (existingItem) {
-        existingItem.qty = novaQtdeTotal; // Usa a quantidade total calculada
+        existingItem.qty = novaQtdeTotal; 
       } else {
-        cart.push({id:Date.now(), nome, tamanho, precoUnit, qty, estoque: estoqueMaximo}); // NOVO: Adiciona o estoque no item do carrinho
+        // Armazena o estoque máximo no item do carrinho para checagem futura na renderização
+        cart.push({id:Date.now(), nome, tamanho, precoUnit, qty, estoque: estoqueMaximo}); 
       }
       
       renderCart();
@@ -362,14 +218,17 @@
       }
       
       let html = cart.map(i=>{
-        // NOVO: Adiciona um aviso se o estoque for muito baixo
+        // Aviso de Últimas Unidades (acima de 80% do estoque)
         const estoqueAviso = i.estoque > 0 && i.qty >= i.estoque * 0.8 ? 
           `<span class="pill-warning">Últimas unidades!</span>` : ''; 
+
+        // Formata a exibição do tamanho (ignora se estiver vazio)
+        const tamanhoStr = i.tamanho ? '— ' + i.tamanho : '';
 
         return `
         <div class="cart-item">
           <div>
-            <b>${i.qty}x ${i.nome}</b> ${i.tamanho ? '— ' + i.tamanho : ''} ${estoqueAviso}
+            <b>${i.qty}x ${i.nome}</b> ${tamanhoStr} ${estoqueAviso}
             <div class="small">${formatBR(i.precoUnit)} cada. Total: ${formatBR(i.precoUnit*i.qty)}</div>
           </div>
           <button class="btn ghost small" onclick="removeItemByNome('${i.nome}')">remover</button>
@@ -408,7 +267,7 @@
       linhas.push(`*Pedido:* ${PEDIDO_ID}`);
       linhas.push(`*Cliente (retirada):* ${cliente}`);
       linhas.push(`\n*Itens:*`);
-      // Monta as linhas, ignorando o tamanho se ele for vazio
+      // Monta as linhas para o WhatsApp
       cart.forEach(i => linhas.push(`• ${i.qty}x ${i.nome} ${i.tamanho ? '(' + i.tamanho + ')' : ''} — ${formatBR(i.precoUnit*i.qty)}`));
       linhas.push(`\n*Total:* ${formatBR(total)}`);
       if(obs) linhas.push(`\n*Observações:* ${obs}`);
@@ -426,3 +285,5 @@
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
     });
   </script>
+</body>
+</html>
