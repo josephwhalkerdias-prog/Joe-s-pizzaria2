@@ -3,10 +3,10 @@
     "id": 1,
     "nome": "Calabresa",
     "desc": "Molho pomodoro caseiro, mussarela, calabresa, cebola e orégano",
-    "price": 36.00,
+    "price": 37.00,
     "available": true,
     "categoria": "Pizzas Assadas",
-    "estoque": 10
+    "estoque": 5
   },
   {
     "id": 2,
@@ -21,7 +21,7 @@
     "id": 3,
     "nome": "Bacon",
     "desc": "Molho pomodoro caseiro, mussarela, bacon e orégano",
-    "price": 38.00,
+    "price": 40.00,
     "available": true,
     "categoria": "Pizzas Assadas",
     "estoque": 5
@@ -38,46 +38,46 @@
   {
     "id": 5,
     "nome": "Pizza de Calabresa Congelada",
-    "desc": "Calabresa, cebola e orégano (Congelada, para assar em casa)",
+    "desc": " Mussarela,  molho pomodoro caseiro, Calabresa e orégano (Congelada, para assar em casa)",
     "price": 30.00,
     "available": true,
     "categoria": "Pizzas Congeladas",
-    "estoque": 15
+    "estoque": 2
   },
   {
     "id": 6,
     "nome": "Pizza de Bacon Congelada",
-    "desc": "Bacon e mussarela (Congelada, para assar em casa)",
+    "desc": "Mussarela,  molho pomodoro caseiro, Bacon e orégano (Congelada, para assar em casa)",
     "price": 33.00,
     "available": true,
     "categoria": "Pizzas Congeladas",
-    "estoque": 12
+    "estoque": 1
   },
   {
     "id": 7,
     "nome": "Pizza de Queijo Provolone Congelada",
-    "desc": "Queijo provolone e orégano (Congelada, para assar em casa)",
+    "desc": "Mussarela,  molho pomodoro caseiro, queijo parmesão, queijo provolone e orégano (Congelada, para assar em casa)",
     "price": 33.00,
     "available": true,
     "categoria": "Pizzas Congeladas",
-    "estoque": 10
+    "estoque": 2
   },
   {
     "id": 8,
     "nome": "Pizza Individual Calabresa Congelada",
-    "desc": "Calabresa, cebola e orégano (Congelada Individual)",
+    "desc": " molho pomodoro caseiro, mussarela e Calabresa  (Congelada, para assar em casa)",
     "price": 13.00,
     "available": true,
     "categoria": "Pizzas Congeladas",
-    "estoque": 20
+    "estoque": 5
   },
   {
     "id": 9,
     "nome": "Pizza Frango Catupiry Individual Congelada",
-    "desc": "Frango e Catupiry (Congelada Individual)",
+    "desc": "Mussarela,  molho pomodoro caseiro, frango desfiado e catupiry Polenghi  (Congelada, para assar em casa)",
     "price": 15.00,
     "available": true,
     "categoria": "Pizzas Congeladas",
-    "estoque": 25
+    "estoque": 2
   }
 ]
